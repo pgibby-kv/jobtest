@@ -1,0 +1,38 @@
+#!/bin/bash
+#CLUSTER=$1
+#SCRIPTNAME=$2
+#CLUSTER="@oak-batch.osc.edu"
+#SCRIPTNAME=dyna-mpp_oaktest
+# get modules 
+. /etc/profile.d/lmod.sh
+# path to qsub
+export PATH=$PATH:/usr/local/torque/2.5.12/bin/
+
+job=`qsub dyna-mpp_oaktest`
+echo $job
+host=`hostname`
+
+donefile=$job".DONE"
+while [ ! -f "$donefile" ]
+do
+	sleep 10
+    #inotifywait -qqt 10 -e create -e moved_to "$(dirname $file)"
+done
+#echo "done sleeping...now post process..." >&2
+# load matlab per dave hudak's atomic scripts (for graphics)
+
+#per haodan's email May 1, 2014
+module load VirtualGL
+vglconnect awe0002@$host
+module load matlab
+module load lspp 
+cp postgraphics.cfile $job
+cd $job 
+lspp4 d3plot c=postgraphics.cfile 
+mv *.png ..
+mv *.avi ..
+mv *.gif ..
+cd ..
+#echo "DONE" >&2
+exit 0
+

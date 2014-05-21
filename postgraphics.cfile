@@ -1,0 +1,49 @@
+
+c Set background color: white background, black text
+background 1.0 1.0 1.0
+textcolor 0.0 0.0 0.0
+labelcolor 0.0 0.0 0.0
+timestamp_color 0.0 0.0 0.0
+
+c Set the graphics window size
+graphicswinsize 800x600
+
+c Set the orientation and auto-center the parts
+back
+ac
+
+c Turn on/off element edges and set element shading
+shad
+mesh on
+
+c Set the title (optional) and show/hide text on the display (0 = hide, 1 = show)
+title pipe whip simulation
+showtitle 1
+showlegend 1
+showminmax 1
+timestamp 1
+showtriad 1
+
+c Color the parts or turn on an fcomp (set fcomp range if necessary)
+c Gray
+c color global 0.7 0.7 0.7
+c color all
+c Von-mises stress contours
+fringe 9
+pfringe
+range userdef 0 500
+
+c Go to first state and save an image
+state 1
+print png "image_back_first_state.png" LANDSCAPE nocompress nogamma opaque enlisted "OGL1x1"
+
+c Go to last state and save an image
+state -1
+print png "image_back_last_state.png" LANDSCAPE nocompress nogamma opaque enlisted "OGL1x1"
+
+c Create GIF and AVI animations
+movie gif 600x450 "animation_back" 1 10
+movie avi/rle/1 600x450 "animation_back" 1 10
+
+c Close LS-Prepost
+exit

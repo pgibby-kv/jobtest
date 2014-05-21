@@ -1,0 +1,36 @@
+#PBS -N JobName
+#PBS -l walltime=0:30:00
+#PBS -l nodes=2:ppn=8
+#PBS -j oe
+#PBS -S /bin/csh
+set echo on
+hostname
+# The following lines set up the LSDYNA environment
+# pgg - below is for Oakley 
+module swap mvapich2/1.7 intelmpi
+module load mpp-dyna/971_d_R5.0
+
+# below for Glenn
+#module unload mpi
+#module load mpp971_d_R5
+#
+# Move to the directory where the input files are located
+#
+cd $PBS_O_WORKDIR
+mkdir $PBS_JOBID
+cp *.k $TMPDIR
+cd $TMPDIR
+#
+# Run LSDYNA (number of cpus > 1)
+#
+# oakley: mpiexec mpp971 I=adpips.k NCPU=24
+mpiexec mpp971 I=adpips.k NCPU=24
+# glenn: mpiexec mpp971 I=adpips.k NCPU=16
+#
+# Copy results back to submission directory
+#
+pbsdcp -g '*' $PBS_O_WORKDIR/$PBS_JOBID
+touch $PBS_O_WORKDIR/$PBS_JOBID.DONE
+
+#sqlite3 $HOME/awesim_dev/rails1/db/development.sqlite3 "update simulations set status='Success' where jobname like '%$PBS_JOBID%'"
+# post-processing
